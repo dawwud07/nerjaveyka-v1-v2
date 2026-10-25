@@ -1,0 +1,56 @@
+name: nerjaveyka
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-nerjaveyka}
+      POSTGRES_USER: ${POSTGRES_USER:-nerjaveyka}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - backend
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DJANGO_DEBUG: "False"
+      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1}
+      CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS:-}
+      DATABASE_URL: postgres://${POSTGRES_USER:-nerjaveyka}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-nerjaveyka}
+    ports:
+      - "${WEB_PORT:-8000}:8000"
+    volumes:
+      - media_data:/app/media
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             gunicorn core.wsgi:application --bind 0.0.0.0:8000
+             --workers ${GUNICORN_WORKERS:-3} --timeout 60
+             --access-logfile - --error-logfile -"
+    networks:
+      - backend
+
+volumes:
+  postgres_data:
+  media_data:
+
+networks:
+  backend:
+    driver: bridge
