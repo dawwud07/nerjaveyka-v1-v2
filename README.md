@@ -6,11 +6,11 @@ REST API для сайта Nerjaveyka: публичный каталог (кат
 
 ## Стек
 
-- Python 3.10+ / Django 5.2
+- Python 3.10–3.13 / Django 5.2
 - Django REST Framework, drf-yasg (Swagger/OpenAPI)
 - django-filter, поиск и сортировка на уровне API
-- SQLite для локальной разработки, PostgreSQL в production
-- Gunicorn + WhiteNoise, Docker / Docker Compose
+- SQLite локально и на небольших площадках, PostgreSQL/MySQL в production
+- Gunicorn + WhiteNoise, Docker / Docker Compose, PythonAnywhere
 - flake8, black, isort; Prettier для документации и конфигов
 
 ## Структура проекта
@@ -27,15 +27,18 @@ nerjaveyka/
 ├── pyproject.toml        # метаданные проекта и конфиги инструментов
 ├── .flake8               # правила линтера
 ├── .env.example          # шаблон переменных окружения
+├── deploy/
+│   └── pythonanywhere/   # WSGI-шаблон и .env для PythonAnywhere
 ├── Dockerfile
 ├── docker-compose.yml    # web + PostgreSQL
-├── DEPLOYMENT.md         # инструкция по развёртыванию
+├── DEPLOYMENT.md         # Docker/VPS-развёртывание
+├── PYTHONANYWHERE.md     # инструкция для PythonAnywhere
 └── db.sqlite3            # локальная база (в git не попадает)
 ```
 
 ## Быстрый старт
 
-Нужен Python 3.10+.
+Нужен Python 3.10–3.13 (Django 5.2).
 
 ```powershell
 python -m venv venv
@@ -69,6 +72,7 @@ python manage.py runserver
 | `CSRF_TRUSTED_ORIGINS`                                                                | Доверенные origin'ы для CSRF                           | пусто                            |
 | `CORS_ALLOWED_ORIGINS`                                                                | Origin'ы фронтенда для CORS                            | пусто                            |
 | `DATABASE_URL`                                                                        | Строка подключения к БД; обязательна при `DEBUG=False` | SQLite `db.sqlite3`              |
+| `DJANGO_SECURE_SSL_REDIRECT`                                                          | Принудительный HTTPS-редирект                          | `True` при `DEBUG=False`         |
 | `DJANGO_MEDIA_ROOT`                                                                   | Каталог загруженных файлов                             | `media/`                         |
 | `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USE_TLS`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD` | SMTP для production                                    | console backend при `DEBUG=True` |
 | `DEFAULT_FROM_EMAIL`                                                                  | Адрес отправителя                                      | `EMAIL_HOST_USER`                |
@@ -137,4 +141,17 @@ docker compose logs -f web
 Контейнер `web` при старте применяет миграции и запускает Gunicorn на порту
 `8000`; статика собирается в образ, медиа хранится в volume. Подробности,
 ручной деплой, Nginx, обновления и бэкапы — в [DEPLOYMENT.md](DEPLOYMENT.md).
-"# nerjaveyka-v1-v2" 
+
+## PythonAnywhere
+
+Пошаговая инструкция: [PYTHONANYWHERE.md](PYTHONANYWHERE.md). В репозитории
+уже есть WSGI-шаблон и пример окружения:
+
+```text
+deploy/pythonanywhere/wsgi.py
+deploy/pythonanywhere/.env.example
+```
+
+Для площадки используется Python 3.13 и SQLite (по умолчанию) или MySQL.
+Docker и Gunicorn на PythonAnywhere не нужны — приложение запускается
+через WSGI.

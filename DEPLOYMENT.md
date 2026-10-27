@@ -2,6 +2,8 @@
 
 Документ описывает production-запуск через Docker Compose и вручную
 (Gunicorn + systemd + Nginx). Локальная разработка — в [README.md](README.md).
+Для площадки PythonAnywhere используйте отдельную инструкцию —
+[PYTHONANYWHERE.md](PYTHONANYWHERE.md).
 
 ## 1. Требования
 
@@ -17,7 +19,7 @@
 
 ```bash
 cp .env.example .env
-```
+
 python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 ```
 
@@ -243,6 +245,8 @@ docker compose exec web python manage.py collectstatic --noinput
 - [ ] `DJANGO_ALLOWED_HOSTS` содержит только реальные домены
 - [ ] `CSRF_TRUSTED_ORIGINS` и `CORS_ALLOWED_ORIGINS` ограничены своим фронтендом
 - [ ] `DATABASE_URL` с надёжным паролем; PostgreSQL недоступен извне
+- [ ] Для PythonAnywhere: `DJANGO_ALLOWED_HOSTS` содержит
+      `USERNAME.pythonanywhere.com`, настроены маппинги `/static/` и `/media/`
 - [ ] HTTPS + HSTS, сертификат обновляется автоматически
 - [ ] `.env` с правами `600`, не попадает в git и образ
 - [ ] Настроены бэкапы БД и проверено восстановление

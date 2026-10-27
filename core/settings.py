@@ -45,7 +45,10 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_SSL_REDIRECT = not DEBUG
+SECURE_SSL_REDIRECT = os.environ.get(
+    'DJANGO_SECURE_SSL_REDIRECT',
+    'False' if DEBUG else 'True',
+).lower() in ('true', '1', 'yes')
 # /health должен отвечать по HTTP внутри контейнера/за балансировщиком.
 SECURE_REDIRECT_EXEMPT = [r'^health$']
 SESSION_COOKIE_SECURE = not DEBUG
@@ -158,9 +161,9 @@ USE_I18N = True
 USE_TZ = True
 
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-MEDIA_URL = 'media/'
+MEDIA_URL = '/media/'
 MEDIA_ROOT = Path(os.environ.get('DJANGO_MEDIA_ROOT') or BASE_DIR / 'media')
 
 STORAGES = {
