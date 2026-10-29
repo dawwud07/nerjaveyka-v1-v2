@@ -91,6 +91,15 @@ DJANGO_ALLOWED_HOSTS=USERNAME.pythonanywhere.com,www.USERNAME.pythonanywhere.com
 CSRF_TRUSTED_ORIGINS=https://USERNAME.pythonanywhere.com,https://www.USERNAME.pythonanywhere.com
 ```
 
+Если фронтенд при разработке открыт на `http://localhost:3000`, добавьте
+его origin в `.env` (без слэша на конце):
+
+```dotenv
+CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+```
+
+После изменения `.env` нажмите **Reload** на вкладке **Web**.
+
 ### База данных
 
 По умолчанию в шаблоне используется SQLite:
@@ -243,6 +252,7 @@ cp db.sqlite3 ~/nerjaveyka-backup-$(date +%F-%H%M).sqlite3
 | `ModuleNotFoundError: No module named 'core'` | В WSGI-файле неверный `PROJECT_DIR` или в Web-вкладке указан не тот virtualenv. |
 | Админка без CSS, `/static/...` отдаёт 404 | Не выполнен `collectstatic` или не настроен маппинг `/static/` → `staticfiles`. |
 | `CSRF verification failed` | Проверьте `CSRF_TRUSTED_ORIGINS` (со схемой `https://`) и что сайт открыт по HTTPS. |
+| `CORS policy: No 'Access-Control-Allow-Origin'` | Добавьте origin фронтенда в `CORS_ALLOWED_ORIGINS` (без слэша на конце), например `http://localhost:3000`, и нажмите **Reload**. |
 | Бесконечный редирект на HTTPS | Временно задайте `DJANGO_SECURE_SSL_REDIRECT=False` в `.env`, проверьте заголовок `X-Forwarded-Proto` и настройки прокси. |
 | `database is locked` | SQLite не любит параллельную запись; перейдите на MySQL. |
 | `No module named 'MySQLdb'` | Установите `mysqlclient` в активированное виртуальное окружение. |
