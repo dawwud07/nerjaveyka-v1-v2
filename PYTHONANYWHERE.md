@@ -98,6 +98,10 @@ CSRF_TRUSTED_ORIGINS=https://USERNAME.pythonanywhere.com,https://www.USERNAME.py
 CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
 ```
 
+Для быстрой проверки можно временно разрешить все origin'ы строкой
+`CORS_ALLOW_ALL_ORIGINS=True`, но не оставляйте так в production — лучше
+перечислить конкретные домены.
+
 После изменения `.env` нажмите **Reload** на вкладке **Web**.
 
 ### База данных

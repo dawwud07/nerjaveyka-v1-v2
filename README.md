@@ -71,6 +71,7 @@ python manage.py runserver
 | `DJANGO_ALLOWED_HOSTS`                                                                | Хосты через запятую                                    | `localhost,127.0.0.1,testserver` |
 | `CSRF_TRUSTED_ORIGINS`                                                                | Доверенные origin'ы для CSRF                           | пусто                            |
 | `CORS_ALLOWED_ORIGINS`                                                                | Origin'ы фронтенда для CORS                            | пусто                            |
+| `CORS_ALLOW_ALL_ORIGINS`                                                              | Разрешить любые origin'ы; только для отладки           | `False`                          |
 | `DATABASE_URL`                                                                        | Строка подключения к БД; обязательна при `DEBUG=False` | SQLite `db.sqlite3`              |
 | `DJANGO_SECURE_SSL_REDIRECT`                                                          | Принудительный HTTPS-редирект                          | `True` при `DEBUG=False`         |
 | `DJANGO_MEDIA_ROOT`                                                                   | Каталог загруженных файлов                             | `media/`                         |
